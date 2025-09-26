@@ -1,0 +1,8 @@
+DATABASE_URL=postgresql://username:password@localhost:5432/exhibition_rules
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_DB=exhibition_rules
+POSTGRES_USER=username
+POSTGRES_PASSWORD=password
+
+# 이 파일을 .env로 복사하고 실제 데이터베이스 정보로 수정하세요.

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ rule.title if rule else '규칙 상세' }} - 전시회 규칙 관리</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        font-family: "Arial", sans-serif;
+      }
+      .main-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin: 2rem auto;
+      }
+      .header-section {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+      .category-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        border-left: 5px solid #667eea;
+      }
+      .category-title {
+        color: #333;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        background: linear-gradient(45deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .rule-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 0.8rem;
+        border-left: 3px solid #667eea;
+        transition: transform 0.2s ease;
+      }
+      .rule-item:hover {
+        transform: translateX(5px);
+        background: #e8f4fd;
+      }
+      .rule-number {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        font-weight: bold;
+        margin-right: 0.8rem;
+      }
+      .btn-custom {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        color: white;
+        transition: transform 0.2s ease;
+      }
+      .btn-custom:hover {
+        transform: scale(1.05);
+        color: white;
+      }
+      .breadcrumb-custom {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+      }
+      .stats-bar {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="main-container">
+        <div class="breadcrumb-custom">
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item">
+                <a href="/" class="text-decoration-none">
+                  <i class="fas fa-home"></i> 홈
+                </a>
+              </li>
+              <li class="breadcrumb-item active">규칙 상세</li>
+            </ol>
+          </nav>
+        </div>
+
+        {% if rule %}
+        <div class="header-section">
+          <h1>
+            <i class="fas fa-file-alt"></i>
+            {{ rule.title }}
+          </h1>
+          <p class="mb-2">
+            <i class="fas fa-link"></i>
+            <a
+              href="{{ rule.url }}"
+              target="_blank"
+              class="text-white text-decoration-none"
+            >
+              {{ rule.url }}
+            </a>
+          </p>
+          <small>
+            <i class="fas fa-calendar"></i>
+            생성일: {{ rule.created_at.strftime('%Y년 %m월 %d일 %H:%M') }}
+          </small>
+        </div>
+
+        <div class="stats-bar">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <h4 class="text-primary">{{ categories|length }}</h4>
+              <small class="text-muted">총 카테고리</small>
+            </div>
+            <div class="col-md-4">
+              <h4 class="text-success">
+                {% set total_items = 0 %} {% for category in categories %} {%
+                set total_items = total_items + category.items|length %} {%
+                endfor %} {{ total_items }}
+              </h4>
+              <small class="text-muted">총 규칙 항목</small>
+            </div>
+            <div class="col-md-4">
+              <h4 class="text-info">{{ rule.updated_at.strftime('%m/%d') }}</h4>
+              <small class="text-muted">최종 업데이트</small>
+            </div>
+          </div>
+        </div>
+
+        {% if categories %} {% for category in categories %}
+        <div class="category-card">
+          <h3 class="category-title">
+            <i class="fas fa-tag"></i>
+            {{ category.name }}
+          </h3>
+
+          {% if category.items %} {% for item in category.items %}
+          <div class="rule-item">
+            <div class="d-flex align-items-start">
+              <span class="rule-number">{{ loop.index }}</span>
+              <div class="flex-grow-1">
+                {{ item.content_ko or item.content_en }}
+              </div>
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <div class="text-muted text-center p-3">
+            <i class="fas fa-inbox"></i>
+            이 카테고리에는 규칙이 없습니다.
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %} {% else %}
+        <div class="text-center p-5">
+          <i class="fas fa-exclamation-circle fa-3x text-muted mb-3"></i>
+          <h5>카테고리 정보가 없습니다</h5>
+          <p class="text-muted">이 규칙에 대한 상세 정보를 찾을 수 없습니다.</p>
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+          <a href="/" class="btn btn-custom me-3">
+            <i class="fas fa-arrow-left"></i> 목록으로 돌아가기
+          </a>
+          <a href="/download/pdf" class="btn btn-outline-primary me-2">
+            <i class="fas fa-file-pdf"></i> PDF 다운로드
+          </a>
+          <a href="/download/ppt" class="btn btn-outline-success">
+            <i class="fas fa-file-powerpoint"></i> PPT 다운로드
+          </a>
+        </div>
+
+        {% else %}
+        <div class="text-center p-5">
+          <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+          <h3>규칙을 찾을 수 없습니다</h3>
+          <p class="text-muted">
+            요청하신 규칙이 존재하지 않거나 삭제되었습니다.
+          </p>
+          <a href="/" class="btn btn-custom">
+            <i class="fas fa-home"></i> 홈으로 돌아가기
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
